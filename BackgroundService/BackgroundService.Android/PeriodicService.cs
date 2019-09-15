@@ -37,6 +37,7 @@ namespace BackgroundService.Droid
             Plugin.LocalNotifications.CrossLocalNotifications.Current.Show($"Local Notification Title + {i}", $"Local Notification + {i}", i);
             i++;
         }
+
         public override void OnDestroy()
         {
             var intent = new Intent(this, typeof(PeriodicService));

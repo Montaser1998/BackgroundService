@@ -8,41 +8,25 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms;
 
 namespace BackgroundService.Droid
 {
-    [Service(Enabled = true)]
-    public class PeriodicService : Service
+    [BroadcastReceiver]
+    [IntentFilter(new[] { Intent.ActionBootCompleted })]
+    public class BootComplete : BroadcastReceiver
     {
-        public override IBinder OnBind(Intent intent)
+        #region implemented abstract members of BroadcastReceiver
+        public override void OnReceive(Context context, Intent intent)
         {
-            return null;
+            if (intent.Action.Equals(Intent.ActionBootCompleted))
+            {
+                Services.StartForegroundServiceCompat<ExampleService>(context);
+            }
         }
-
-        public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
-        {
-            var Timer = new Timer(new TimerCallback(TickTimer),
-                                  null,
-                                  1000,
-                                  2000);
-
-            return StartCommandResult.ContinuationMask;
-        }
-        int i = 0;
-        private void TickTimer(object state)
-        {
-            Plugin.LocalNotifications.CrossLocalNotifications.Current.Show($"Local Notification Title + {i}", $"Local Notification + {i}", i);
-            i++;
-        }
-
-        public override void OnDestroy()
-        {
-            var intent = new Intent(this, typeof(PeriodicService));
-            StartService(intent);
-            //base.OnDestroy();
-        }
+        #endregion
     }
 }

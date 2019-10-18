@@ -24,7 +24,10 @@ namespace BackgroundService.Droid
         {
             if (intent.Action.Equals(Intent.ActionBootCompleted))
             {
-                Services.StartForegroundServiceCompat<ExampleService>(context);
+                Toast.MakeText(context, "Action Boot Completed!", ToastLength.Long).Show();
+                var serviceIntent = new Intent(context, typeof(MainActivity));
+                serviceIntent.AddFlags(ActivityFlags.NewTask);
+                context.StartActivity(serviceIntent);
             }
         }
         #endregion

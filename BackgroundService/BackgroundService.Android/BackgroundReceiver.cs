@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Support.V4.App;
 using Android.Support.V4.Content;
-using Android.Views;
-using Android.Widget;
-using Xamarin.Forms;
-
+using services = BackgroundService.Droid.Services;
 namespace BackgroundService.Droid
 {
     [Service(Name = "com.companyname.test.ExampleService")]
@@ -26,30 +18,20 @@ namespace BackgroundService.Droid
         {
             base.OnCreate();
         }
-        public const string CHANNEL_ID = "MyApplication";
         public override StartCommandResult OnStartCommand(Intent intent, [GeneratedEnum] StartCommandFlags flags, int startId)
         {
             string input = intent.GetStringExtra("inputExtra");
 
             Intent notificationIntent = new Intent(this, typeof(MainActivity));
-            PendingIntent pendingIntent = PendingIntent.GetActivity(this,
-                0, notificationIntent, 0);
-            int index = 1;
-            Device.StartTimer(TimeSpan.FromSeconds(2), () =>
-            {
-                Notification notification = new Notification.Builder(this, CHANNEL_ID)
-                .SetContentTitle("Example Service")
-                .SetContentText(input)
-                .SetSmallIcon(Resource.Drawable.icon)
-                .SetContentIntent(pendingIntent)
-                .Build();
-
-                StartForeground(index, notification);
-
-                index += 1;
-                return true;
-            });
-
+            PendingIntent pendingIntent = PendingIntent.GetActivity(this, 0, notificationIntent, 0);
+            var notification = new NotificationCompat.Builder(this, services.CHANNEL_ID)
+            .SetContentTitle("Example Service")
+            .SetContentText(input)
+            .SetContentIntent(pendingIntent)
+            .SetSmallIcon(Resource.Drawable.icon)
+            .SetPriority((int)NotificationImportance.None)
+            .Build();
+            StartForeground(1, notification);
             return StartCommandResult.NotSticky;
         }
     }

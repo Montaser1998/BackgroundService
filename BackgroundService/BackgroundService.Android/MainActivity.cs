@@ -6,7 +6,6 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
-using Android.Content;
 using Android.Support.V4.Content;
 
 namespace BackgroundService.Droid
@@ -26,9 +25,8 @@ namespace BackgroundService.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-
-            Services.StartForegroundServiceCompat<ExampleService>(this);
-            LoadApplication(new App()); //Do something special with the notification data
+            this.StartServiceCompat<ExampleService>(savedInstanceState);
+            LoadApplication(new App());
         }
 
 
@@ -38,34 +36,5 @@ namespace BackgroundService.Droid
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-    }
-    public static class Services
-    {
-        public const string CHANNEL_ID = "MyApplication";
-        public static void StartForegroundServiceCompat<T>(this Context context, Bundle args = null) where T : Service
-        {
-            var intent = new Intent(context, typeof(T));
-            if (args != null)
-            {
-                intent.PutExtras(args);
-            }
-
-            if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O)
-            {
-                NotificationChannel serviceChannel = new NotificationChannel
-                    (CHANNEL_ID,
-                    "Example Service Channel",
-                    NotificationManager.ImportanceDefault);
-
-                var manager = context.GetSystemService(Context.NotificationService) as NotificationManager;
-                manager.CreateNotificationChannel(serviceChannel);
-                context.StartForegroundService(intent);
-            }
-            else
-            {
-                context.StartService(intent);
-            }
-        }
-
     }
 }
